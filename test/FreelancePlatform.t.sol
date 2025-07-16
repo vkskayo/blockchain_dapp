@@ -4,6 +4,8 @@ pragma solidity ^0.8.19;
 import "forge-std/Test.sol";
 import "../src/FreelancePlatform.sol";
 
+
+
 contract FreelancePlatformTest is Test {
     FreelancePlatform platform;
 
@@ -171,6 +173,43 @@ contract FreelancePlatformTest is Test {
         platform.submitProposal(1, "Proposta 2");
     }
 
+    function testProposalsByFreelancer() public {
+        vm.prank(employer);
+        platform.registerUser("Empresa", false);
+        vm.deal(employer, 1 ether);
+        vm.prank(employer);
+        platform.createJob{value: 1 ether}("Novo job");
 
+        vm.prank(freelancer);
+        platform.registerUser("Freela", true);
+
+        vm.prank(freelancer);
+        platform.submitProposal(1, "Posso entregar em 5 dias");
+
+        // usa a função correta
+        FreelancePlatform.Proposal[] memory props = platform.getProposalsByFreelancer(freelancer);
+        assertEq(props.length, 1);
+        assertEq(props[0].id, 1);
+    }
+
+
+    function testGetProposalsByFreelancer() public {
+        vm.prank(employer);
+        platform.registerUser("Empresa", false);
+        vm.deal(employer, 1 ether);
+        vm.prank(employer);
+        platform.createJob{value: 1 ether}("Novo job");
+
+        vm.prank(freelancer);
+        platform.registerUser("Freela", true);
+
+        vm.prank(freelancer);
+        platform.submitProposal(1, "Posso entregar em 5 dias");
+
+        FreelancePlatform.Proposal[] memory propostas = platform.getProposalsByFreelancer(freelancer);
+        assertEq(propostas.length, 1);
+        assertEq(propostas[0].freelancer, freelancer);
+        assertEq(propostas[0].proposalText, "Posso entregar em 5 dias");
+    }
 
 }

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import type { Contract, BigNumberish } from "ethers";
 import { JobListToApply } from "../freelancer/JobListToApply";
 import { SubmitProposalForm } from "../freelancer/SubmitProposalForm";
+import { SentProposalsList } from "../freelancer/SentProposalsList";
+
 
 
 interface Props {
@@ -9,17 +11,6 @@ interface Props {
   contract: Contract;
 }
 
-// Componente placeholder para listar propostas enviadas pelo freelancer
-// Você pode implementar depois com lógica semelhante ao ProposalsList, mas filtrando por account
-function SentProposalsList({ contract, account }: { contract: Contract; account: string }) {
-  // Aqui você pode buscar propostas enviadas pelo freelancer (account)
-  // e exibir status (aceita, paga, etc)
-  return (
-    <div style={{ maxWidth: 700, margin: "1rem auto", color: "#555" }}>
-      <p>Componente para listar propostas enviadas pelo freelancer (a implementar).</p>
-    </div>
-  );
-}
 
 export function DashboardFreelancer({ account, contract }: Props) {
   const [selectedJobId, setSelectedJobId] = useState<BigNumberish | null>(null);
@@ -76,7 +67,8 @@ export function DashboardFreelancer({ account, contract }: Props) {
 
       <section>
         <h3>Propostas Enviadas</h3>
-        <SentProposalsList contract={contract} account={account} />
+        <SentProposalsList contract={contract} account={account} refreshTrigger={refreshJobs} />
+
       </section>
     </div>
   );

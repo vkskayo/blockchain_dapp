@@ -111,6 +111,23 @@ function JobItem({ job, contract, refreshJobs }: JobItemProps) {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState("");
+  const [isPaid, setIsPaid] = useState<boolean | null>(null); // null = carregando
+
+  async function fetchProposalStatus() {
+    if (job.acceptedProposalId === 0) return;
+
+    try {
+      const proposal = await contract.proposals(job.acceptedProposalId);
+      setIsPaid(proposal.paid);
+    } catch (err) {
+      console.error("Erro ao buscar status da proposta:", err);
+      setIsPaid(null);
+    }
+  }
+
+  useEffect(() => {
+    fetchProposalStatus();
+  }, [job]);
 
   async function releasePayment() {
     setPaymentLoading(true);
@@ -121,7 +138,8 @@ function JobItem({ job, contract, refreshJobs }: JobItemProps) {
       const tx = await contract.releasePayment(job.acceptedProposalId);
       await tx.wait();
       setPaymentSuccess("Pagamento liberado com sucesso!");
-      refreshJobs();
+      await fetchProposalStatus(); // Atualiza o status local
+      refreshJobs(); // Atualiza o dashboard
     } catch (err: any) {
       setPaymentError("Erro ao liberar pagamento: " + (err.message || err));
     }
@@ -146,12 +164,19 @@ function JobItem({ job, contract, refreshJobs }: JobItemProps) {
       </p>
 
       {/* Botão liberar pagamento */}
-      {!job.isOpen && job.acceptedProposalId !== 0 && (
+      {!job.isOpen && job.acceptedProposalId !== 0 && isPaid === false && (
         <div style={{ marginBottom: "1rem" }}>
           <button
             onClick={releasePayment}
             disabled={paymentLoading}
-            style={{ padding: "0.5rem 1rem" }}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+            }}
           >
             {paymentLoading ? "Liberando pagamento..." : "Liberar pagamento"}
           </button>
@@ -160,12 +185,19 @@ function JobItem({ job, contract, refreshJobs }: JobItemProps) {
         </div>
       )}
 
-      {/* Propostas para o job */}
+      {isPaid === true && (
+        <p style={{ color: "green", fontWeight: "bold" }}>Pagamento já foi realizado ✅</p>
+      )}
+
       <ProposalsList
         contract={contract}
         jobId={job.id}
-        onProposalsUpdated={refreshJobs}
+        onProposalsUpdated={() => {
+          refreshJobs();
+          fetchProposalStatus(); // garante sincronia
+        }}
       />
     </div>
   );
 }
+

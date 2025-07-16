@@ -85,6 +85,57 @@
   },
   {
     "type": "function",
+    "name": "getProposalsByFreelancer",
+    "inputs": [
+      {
+        "name": "freelancer",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct FreelancePlatform.Proposal[]",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "jobId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "freelancer",
+            "type": "address",
+            "internalType": "address payable"
+          },
+          {
+            "name": "proposalText",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "accepted",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "paid",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getProposalsByJob",
     "inputs": [
       {
@@ -316,6 +367,30 @@
         "name": "paid",
         "type": "bool",
         "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proposalsByFreelancer",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"

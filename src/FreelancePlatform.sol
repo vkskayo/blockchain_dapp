@@ -36,7 +36,7 @@ contract FreelancePlatform {
     mapping(uint => Proposal) public proposals;
     mapping(uint => uint[]) public proposalsByJob;
     mapping(address => mapping(uint => bool)) public hasProposed;
-
+    mapping(address => uint[]) public proposalsByFreelancer;
 
 
     // Eventos
@@ -76,10 +76,12 @@ contract FreelancePlatform {
         proposalCount++;
         proposals[proposalCount] = Proposal(proposalCount, jobId, payable(msg.sender), proposalText, false, false);
         proposalsByJob[jobId].push(proposalCount);
+        proposalsByFreelancer[msg.sender].push(proposalCount); // <-- novo!
         hasProposed[msg.sender][jobId] = true;
 
         emit ProposalSubmitted(proposalCount, jobId, msg.sender);
     }
+
 
     // Empregador aceita proposta
     function acceptProposal(uint proposalId) external {
@@ -139,5 +141,17 @@ contract FreelancePlatform {
         User storage user = users[userAddr];
         return (user.name, user.isFreelancer, user.exists);
     }
+
+    function getProposalsByFreelancer(address freelancer) public view returns (Proposal[] memory) {
+        uint[] memory ids = proposalsByFreelancer[freelancer];
+        Proposal[] memory result = new Proposal[](ids.length);
+
+        for (uint i = 0; i < ids.length; i++) {
+            result[i] = proposals[ids[i]];
+        }
+
+        return result;
+    }
+
 
 }
