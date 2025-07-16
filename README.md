@@ -1,66 +1,84 @@
-## Foundry
+#  Projeto com Foundry + React
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Este projeto utiliza [Foundry](https://book.getfoundry.sh/) para desenvolvimento de smart contracts e um frontend em React.
 
-Foundry consists of:
+---
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Etapas para rodar localmente
 
-## Documentation
+### 1. Inicie o Anvil (em um terminal separado)
 
-https://book.getfoundry.sh/
+Anvil é a blockchain local usada para desenvolvimento e testes:
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+docker run -it --rm --network host ghcr.io/foundry-rs/foundry anvil
 ```
 
-### Test
+---
 
-```shell
-$ forge test
+### 2. Entre no container com acesso ao host
+
+Abra outro terminal e execute:
+
+```bash
+docker run -it --rm \
+  --network host \
+  -v "$PWD":/code \
+  -w /code \
+  ghcr.io/foundry-rs/foundry bash
 ```
 
-### Format
+---
 
-```shell
-$ forge fmt
+### 3. Faça o deploy do contrato dentro do container
+
+Já dentro do container, execute:
+
+```bash
+forge script script/Deploy.s.sol \
+  --rpc-url http://localhost:8545 \
+  --broadcast \
+  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-### Gas Snapshots
+> Esta chave é a padrão da conta 0 do Anvil, que já tem saldo pré-carregado.
 
-```shell
-$ forge snapshot
+---
+
+### 4. Atualize o frontend com o endereço do contrato
+
+Abra o arquivo:
+
+```
+frontend/src/AppRoutes.tsx
 ```
 
-### Anvil
+E substitua o valor do endereço do contrato implantado, caso necessário.
 
-```shell
-$ anvil
+---
+
+### 5. Inicie o frontend
+
+Em outro terminal:
+
+```bash
+cd frontend
+npm install
+npm start
 ```
 
-### Deploy
+---
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+##  Para testar
 
-### Cast
+- Verifique se a rede local Anvil está rodando em `127.0.0.1:8545`
+- Certifique-se de que há contas com ETH disponíveis (a Anvil já fornece contas com saldo automaticamente)
 
-```shell
-$ cast <subcommand>
-```
+---
 
-### Help
+## Requisitos
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- Docker
+- Node.js (para o frontend)
+
+---
