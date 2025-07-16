@@ -35,6 +35,8 @@ contract FreelancePlatform {
     mapping(uint => Job) public jobs;
     mapping(uint => Proposal) public proposals;
     mapping(uint => uint[]) public proposalsByJob;
+    mapping(address => mapping(uint => bool)) public hasProposed;
+
 
 
     // Eventos
@@ -69,11 +71,12 @@ contract FreelancePlatform {
         require(users[msg.sender].exists && users[msg.sender].isFreelancer, "Somente freelancers");
         Job storage job = jobs[jobId];
         require(job.isOpen, "Job fechado");
+        require(!hasProposed[msg.sender][jobId], "Ja enviou proposta para esse job");
 
         proposalCount++;
         proposals[proposalCount] = Proposal(proposalCount, jobId, payable(msg.sender), proposalText, false, false);
-
         proposalsByJob[jobId].push(proposalCount);
+        hasProposed[msg.sender][jobId] = true;
 
         emit ProposalSubmitted(proposalCount, jobId, msg.sender);
     }

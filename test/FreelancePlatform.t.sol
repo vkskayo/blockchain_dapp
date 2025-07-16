@@ -149,6 +149,28 @@ contract FreelancePlatformTest is Test {
         assertEq(allIds[0], 1);
         assertEq(allIds[1], 2);
     }
+    function testCannotSubmitMultipleProposalsToSameJob() public {
+        // Setup: empregador cria job
+        vm.prank(employer);
+        platform.registerUser("Empresa", false);
+        vm.deal(employer, 1 ether);
+        vm.prank(employer);
+        platform.createJob{value: 1 ether}("Job");
+
+        // Setup: freelancer se registra
+        vm.prank(freelancer);
+        platform.registerUser("Freelancer", true);
+
+        // Primeira proposta
+        vm.prank(freelancer);
+        platform.submitProposal(1, "Proposta 1");
+
+        // Segunda proposta deve falhar
+        vm.prank(freelancer);
+        vm.expectRevert("Ja enviou proposta para esse job");
+        platform.submitProposal(1, "Proposta 2");
+    }
+
 
 
 }
