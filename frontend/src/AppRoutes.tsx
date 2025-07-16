@@ -9,7 +9,7 @@ import { Home } from "./components/pages/Home";
 import { DashboardFreelancer } from "./components/pages/DashboardFreelancer";
 import { DashboardContratante } from "./components/pages/DashboardContratante";
 
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const CONTRACT_ADDRESS = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
 
 export function AppRoutes() {
   const [account, setAccount] = useState<string>();
